@@ -35,10 +35,13 @@ abstract class ResourceStream implements StreamInterface
      */
     public function __toString()
     {
-        if ($this->handle == null || !$this->isSeekable() || $this->getSize() == 0) {
+        if ($this->handle == null || $this->getSize() === 0) {
             return "";
         }
-        $this->seek(0);
+
+        if ($this->isSeekable()) {
+            $this->seek(0);
+        }
         return $this->getContents();
     }
 

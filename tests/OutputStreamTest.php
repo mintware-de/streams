@@ -20,7 +20,6 @@ class OutputStreamTest extends TestCase
     {
         $stream = new OutputStream();
         $this->assertInstanceOf(StreamInterface::class, $stream);
-        $this->assertEquals(0, $stream->getSize());
     }
 
     public function testIsWritable()
@@ -39,5 +38,13 @@ class OutputStreamTest extends TestCase
     {
         $stream = new OutputStream();
         $this->assertFalse($stream->isReadable());
+    }
+
+    public function testGetSize()
+    {
+        $stream = new OutputStream();
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Can not read the size of a write only stream.');
+        $stream->getSize();
     }
 }

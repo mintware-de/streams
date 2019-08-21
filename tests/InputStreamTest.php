@@ -40,4 +40,12 @@ class InputStreamTest extends TestCase
         $stream = new InputStream();
         $this->assertTrue($stream->isReadable());
     }
+
+    public function testGetSize()
+    {
+        $stream = new InputStream();
+        $this->assertNull($stream->getSize());
+        $_SERVER['CONTENT_LENGTH'] = 1337;
+        $this->assertEquals(1337, $stream->getSize());
+    }
 }

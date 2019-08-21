@@ -19,4 +19,9 @@ class InputStream extends ResourceStream
     {
         $this->handle = fopen('php://input', 'r');
     }
+
+    public function getSize()
+    {
+        return isset($_SERVER['CONTENT_LENGTH']) ? (int)$_SERVER['CONTENT_LENGTH'] : null;
+    }
 }

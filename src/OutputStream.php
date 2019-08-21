@@ -20,4 +20,9 @@ class OutputStream extends ResourceStream
     {
         $this->handle = fopen('php://output', 'w');
     }
+
+    public function getSize()
+    {
+        throw new \RuntimeException('Can not read the size of a write only stream.');
+    }
 }
