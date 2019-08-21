@@ -15,15 +15,31 @@ $ composer require mintware-de/streams
 
 ## 📄 FileStream
 Provides read / write access for files.
+```php
+use \MintWare\Streams\FileStream;
+$stream = new FileStream($filename, $readable = true, $writable = true);
+```
 
 ## 💻 MemoryStream
 With this implementation you can read data from and write data to the memory.
+```php
+use \MintWare\Streams\MemoryStream;
+$stream = new MemoryStream($initialData = '');
+```
 
 ## 📥 InputStream
 Provides read-only access for the `php://input` resource. This holds for example the raw HTTP request.
+```php
+use \MintWare\Streams\InputStream;
+$stream = new InputStream();
+```
 
 ## 📤 OutputStream
 Provides write-only access for the `php://output` resource.
+```php
+use \MintWare\Streams\OutputStream;
+$stream = new OutputStream();
+```
 
 ## 🧪 Unit Tests
 ```shell script
