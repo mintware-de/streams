@@ -38,12 +38,12 @@
   },
   "scripts": {
     "fix-cs": [
-      "./vendor/bin/php-cs-fixer fix ./src/ --using-cache=no --rules=@PSR2",
-      "./vendor/bin/php-cs-fixer fix ./tests/ --using-cache=no --rules=@PSR2"
+      "./vendor/bin/php-cs-fixer fix ./src/ --using-cache=no --rules=@PSR12",
+      "./vendor/bin/php-cs-fixer fix ./tests/ --using-cache=no --rules=@PSR12"
     ],
     "fix-cs:dry-run": [
-      "./vendor/bin/php-cs-fixer fix ./src/ --using-cache=no --rules=@PSR2 --dry-run",
-      "./vendor/bin/php-cs-fixer fix ./tests/ --using-cache=no --rules=@PSR2 --dry-run"
+      "./vendor/bin/php-cs-fixer fix ./src/ --using-cache=no --rules=@PSR12 --dry-run",
+      "./vendor/bin/php-cs-fixer fix ./tests/ --using-cache=no --rules=@PSR12 --dry-run"
     ],
     "phpstan": [
       "./vendor/bin/phpstan"
