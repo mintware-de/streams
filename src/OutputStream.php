@@ -18,10 +18,14 @@ class OutputStream extends ResourceStream
      */
     public function __construct()
     {
-        $this->handle = fopen('php://output', 'w');
+        $handle = fopen('php://output', 'w');
+        if ($handle === false) {
+            throw new \Exception('Output stream could not be opened');
+        }
+        $this->handle = $handle;
     }
 
-    public function getSize()
+    public function getSize(): ?int
     {
         throw new \RuntimeException('Can not read the size of a write only stream.');
     }

@@ -22,7 +22,7 @@ class FileStream extends ResourceStream
      * @param bool $readable Defines if the stream is readable
      * @param bool $writable Defines if the stream is writable
      */
-    public function __construct($filename, $readable = true, $writable = true)
+    public function __construct(string $filename, bool $readable = true, bool $writable = true)
     {
         $mode = '';
         if ($writable) {
@@ -32,10 +32,11 @@ class FileStream extends ResourceStream
         }
 
         try {
-            $this->handle = fopen($filename, $mode);
-            if ($this->handle === false) {
+            $handle = fopen($filename, $mode);
+            if ($handle === false) {
                 throw new Exception('File could not be opened');
             }
+            $this->handle = $handle;
         } catch (Exception $e) {
             throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }

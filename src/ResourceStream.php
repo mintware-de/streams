@@ -17,7 +17,7 @@ use RuntimeException;
 abstract class ResourceStream implements StreamInterface
 {
     /** @var resource */
-    protected $handle;
+    protected $handle = null;
 
     /**
      * Reads all data from the stream into a string, from the beginning to end.
@@ -67,10 +67,7 @@ abstract class ResourceStream implements StreamInterface
     public function detach()
     {
         fclose($this->handle);
-        $handle = $this->handle;
-        $this->handle = null;
-
-        return $handle;
+        return $this->handle;
     }
 
     /**
@@ -78,11 +75,12 @@ abstract class ResourceStream implements StreamInterface
      *
      * @return int|null Returns the size in bytes if known, or null if unknown.
      */
-    public function getSize()
+    public function getSize(): ?int
     {
         $length = null;
 
         if ($this->handle != null && is_resource($this->handle)) {
+            /** @var array{"size": string} $stat */
             $stat = fstat($this->handle);
             $length = (int)$stat['size'];
         }
@@ -96,12 +94,15 @@ abstract class ResourceStream implements StreamInterface
      * @return int Position of the file pointer
      * @throws RuntimeException on error.
      */
-    public function tell()
+    public function tell(): int
     {
         try {
-            return ftell($this->handle);
+            if ($this->handle === null || get_resource_type($this->handle) !== 'stream') {
+                throw new Exception('ResourceStream::$handle must be a stream.', 2);
+            }
+            return ftell($this->handle) ?: 0;
         } catch (Exception $e) {
-            throw new RuntimeException(null, $e->getCode(), $e);
+            throw new RuntimeException('', $e->getCode(), $e);
         }
     }
 
@@ -110,7 +111,7 @@ abstract class ResourceStream implements StreamInterface
      *
      * @return bool
      */
-    public function eof()
+    public function eof(): bool
     {
         return $this->tell() == $this->getSize();
     }
@@ -120,7 +121,7 @@ abstract class ResourceStream implements StreamInterface
      *
      * @return bool
      */
-    public function isSeekable()
+    public function isSeekable(): bool
     {
         if (!is_resource($this->handle)) {
             return false;
@@ -140,12 +141,15 @@ abstract class ResourceStream implements StreamInterface
      *     SEEK_END: Set position to end-of-stream plus offset.
      * @throws RuntimeException on failure.
      */
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek($offset, $whence = SEEK_SET): void
     {
         try {
+            if ($this->handle === null || get_resource_type($this->handle) !== 'stream') {
+                throw new Exception('ResourceStream::$handle must be a stream.', 2);
+            }
             fseek($this->handle, $offset, $whence);
         } catch (Exception $e) {
-            throw new RuntimeException(null, $e->getCode(), $e);
+            throw new RuntimeException('', $e->getCode(), $e);
         }
     }
 
@@ -159,12 +163,15 @@ abstract class ResourceStream implements StreamInterface
      * @link http://www.php.net/manual/en/function.fseek.php
      * @see seek()
      */
-    public function rewind()
+    public function rewind(): void
     {
         try {
+            if ($this->handle === null || get_resource_type($this->handle) !== 'stream') {
+                throw new Exception('ResourceStream::$handle must be a stream.', 2);
+            }
             rewind($this->handle);
         } catch (Exception $e) {
-            throw new RuntimeException(null, $e->getCode(), $e);
+            throw new RuntimeException('', $e->getCode(), $e);
         }
     }
 
@@ -173,12 +180,16 @@ abstract class ResourceStream implements StreamInterface
      *
      * @return bool
      */
-    public function isWritable()
+    public function isWritable(): bool
     {
         if (!is_resource($this->handle)) {
             return false;
         }
-        return stristr($this->getMetadata('mode'), 'w') !== false;
+        $metadata = $this->getMetadata('mode');
+        if (!is_string($metadata)) {
+            return false;
+        }
+        return stristr($metadata, 'w') !== false;
     }
 
     /**
@@ -188,12 +199,15 @@ abstract class ResourceStream implements StreamInterface
      * @return int Returns the number of bytes written to the stream.
      * @throws RuntimeException on failure.
      */
-    public function write($string)
+    public function write($string): int
     {
         try {
-            return fwrite($this->handle, $string);
+            if ($this->handle === null || get_resource_type($this->handle) !== 'stream') {
+                throw new Exception('ResourceStream::$handle must be a stream.', 2);
+            }
+            return fwrite($this->handle, $string) ?: 0;
         } catch (Exception $e) {
-            throw new RuntimeException(null, $e->getCode(), $e);
+            throw new RuntimeException('', $e->getCode(), $e);
         }
     }
 
@@ -202,13 +216,17 @@ abstract class ResourceStream implements StreamInterface
      *
      * @return bool
      */
-    public function isReadable()
+    public function isReadable(): bool
     {
         if (!is_resource($this->handle)) {
             return false;
         }
 
         $mode = $this->getMetadata('mode');
+        if (!is_string($mode)) {
+            return false;
+        }
+
         return stristr($mode, 'w+') !== false
             || stristr($mode, 'r') !== false;
     }
@@ -223,12 +241,18 @@ abstract class ResourceStream implements StreamInterface
      *     if no bytes are available.
      * @throws RuntimeException if an error occurs.
      */
-    public function read($length)
+    public function read($length): string
     {
         try {
-            return fread($this->handle, $length);
+            if ($this->handle === null || get_resource_type($this->handle) !== 'stream') {
+                throw new Exception('ResourceStream::$handle must be a stream.', 2);
+            }
+            if ($length < 0) {
+                throw new \LogicException('Length must not be negative.');
+            }
+            return fread($this->handle, $length) ?: '';
         } catch (Exception $e) {
-            throw new RuntimeException(null, $e->getCode(), $e);
+            throw new RuntimeException('', $e->getCode(), $e);
         }
     }
 
@@ -239,7 +263,7 @@ abstract class ResourceStream implements StreamInterface
      * @throws RuntimeException if unable to read or an error occurs while
      *     reading.
      */
-    public function getContents()
+    public function getContents(): string
     {
         return $this->read($this->getSize() - $this->tell());
     }
@@ -258,11 +282,11 @@ abstract class ResourceStream implements StreamInterface
      */
     public function getMetadata($key = null)
     {
-        if ($this->handle === null || !is_resource($this->handle) || $key === null) {
+        if (!is_resource($this->handle) || $key === null) {
             return null;
         }
 
         $metaData = stream_get_meta_data($this->handle);
-        return isset($metaData[$key]) ? $metaData[$key] : null;
+        return $metaData[$key] ?? null;
     }
 }

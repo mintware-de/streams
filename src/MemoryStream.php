@@ -18,12 +18,16 @@ class MemoryStream extends ResourceStream
 {
     /**
      * Creates a new stream which writes into memory
-     * @param string $data Optional data which is written in the new created Stream
+     * @param string|null $data Optional data which is written in the new created Stream
      */
-    public function __construct($data = null)
+    public function __construct(?string $data = null)
     {
-        $this->handle = fopen('php://memory', 'rw');
-        if ($data != null && is_string($data)) {
+        $resource = fopen('php://memory', 'rw');
+        if ($resource === false) {
+            throw new \RuntimeException('Failed to open memory stream.');
+        }
+        $this->handle = $resource;
+        if ($data != null) {
             $this->write($data);
         }
     }

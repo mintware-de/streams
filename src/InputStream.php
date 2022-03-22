@@ -17,10 +17,14 @@ class InputStream extends ResourceStream
      */
     public function __construct()
     {
-        $this->handle = fopen('php://input', 'r');
+        $handle = fopen('php://input', 'r');
+        if ($handle === false) {
+            throw new \Exception('Input stream could not be opened');
+        }
+        $this->handle = $handle;
     }
 
-    public function getSize()
+    public function getSize(): ?int
     {
         return isset($_SERVER['CONTENT_LENGTH']) ? (int)$_SERVER['CONTENT_LENGTH'] : null;
     }

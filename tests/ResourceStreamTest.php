@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Billbee\Tests\CustomShopApi\Http;
+namespace MintWare\Tests\Streams;
 
 use MintWare\Streams\ResourceStream;
 use PHPUnit\Framework\TestCase;
@@ -19,20 +19,24 @@ class TestResourceStream extends ResourceStream
 {
     public function __construct()
     {
-        $this->handle = fopen('php://temp', 'rw');
+        $resource = fopen('php://temp', 'rw');
+        if ($resource === false) {
+            throw new \Exception('Failed to open stream');
+        }
+        $this->handle = $resource;
     }
 }
 
 class ResourceStreamTest extends TestCase
 {
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $stream = $this->createStreamMock();
         $this->assertInstanceOf(StreamInterface::class, $stream);
         $this->assertEquals(0, $stream->getSize());
     }
 
-    public function test__ToString()
+    public function test__ToString(): void
     {
         $stream = $this->createStreamMock();
         $this->assertEquals('', (string)$stream);
@@ -40,7 +44,7 @@ class ResourceStreamTest extends TestCase
         $this->assertEquals('Hello World', (string)$stream);
     }
 
-    public function testClose()
+    public function testClose(): void
     {
         $stream = $this->createStreamMock();
         $stream->close();
@@ -49,18 +53,18 @@ class ResourceStreamTest extends TestCase
         $this->assertFalse($stream->isWritable());
     }
 
-    public function testDetach()
+    public function testDetach(): void
     {
         $stream = $this->createStreamMock();
         $stream->seek(0);
         $handle = $stream->detach();
-        $this->assertTrue($handle !== null && !is_resource($handle));
+        $this->assertTrue($handle !== null && get_resource_type($handle) !== 'stream');
 
         $this->expectException(RuntimeException::class);
         $stream->seek(0);
     }
 
-    public function testGetSize()
+    public function testGetSize(): void
     {
         $stream = $this->createStreamMock();
         $stream->write('Hello World');
@@ -69,7 +73,7 @@ class ResourceStreamTest extends TestCase
         $this->assertNull($stream->getSize());
     }
 
-    public function testTell()
+    public function testTell(): void
     {
         $stream = $this->createStreamMock();
         $stream->write('Hello World');
@@ -78,7 +82,7 @@ class ResourceStreamTest extends TestCase
         $this->assertEquals(0, $stream->tell());
     }
 
-    public function testTellFails()
+    public function testTellFails(): void
     {
         $stream = $this->createStreamMock();
         $stream->write('Hello World');
@@ -88,7 +92,7 @@ class ResourceStreamTest extends TestCase
         $this->assertEquals(0, $stream->tell());
     }
 
-    public function testEof()
+    public function testEof(): void
     {
         $stream = $this->createStreamMock();
         $stream->write('Hello World');
@@ -97,7 +101,7 @@ class ResourceStreamTest extends TestCase
         $this->assertFalse($stream->eof());
     }
 
-    public function testIsSeekable()
+    public function testIsSeekable(): void
     {
         $stream = $this->createStreamMock();
         $this->assertTrue($stream->isSeekable());
@@ -105,7 +109,7 @@ class ResourceStreamTest extends TestCase
         $this->assertFalse($stream->isSeekable());
     }
 
-    public function testRewind()
+    public function testRewind(): void
     {
         $stream = $this->createStreamMock();
         $stream->write('Hello World');
@@ -114,15 +118,15 @@ class ResourceStreamTest extends TestCase
         $this->assertEquals(0, $stream->tell());
     }
 
-    public function testRewindFails()
+    public function testRewindFails(): void
     {
         $stream = $this->createStreamMock();
         $stream->close();
         $this->expectException(RuntimeException::class);
-        $this->assertEquals(0, $stream->rewind());
+        $stream->rewind();
     }
 
-    public function testWrite()
+    public function testWrite(): void
     {
         $stream = $this->createStreamMock();
         $this->assertEquals('', (string)$stream);
@@ -130,7 +134,7 @@ class ResourceStreamTest extends TestCase
         $this->assertEquals('Hello World', (string)$stream);
     }
 
-    public function testWriteFails()
+    public function testWriteFails(): void
     {
         $stream = $this->createStreamMock();
         $stream->close();
@@ -138,20 +142,20 @@ class ResourceStreamTest extends TestCase
         $stream->write('Hello World');
     }
 
-    public function testRead()
+    public function testRead(): void
     {
         $stream = $this->createStreamMock();
         $this->assertEquals('', (string)$stream);
         $stream->write('Hello World');
         $stream->rewind();
-        $this->assertEquals('Hello World', $stream->read($stream->getSize()));
+        $this->assertEquals('Hello World', $stream->read($stream->getSize() ?? 0));
         $stream->rewind();
         $this->assertEquals('Hello', $stream->read(5));
         $stream->seek(6);
         $this->assertEquals('World', $stream->read(5));
     }
 
-    public function testReadFails()
+    public function testReadFails(): void
     {
         $stream = $this->createStreamMock();
         $stream->close();
@@ -159,7 +163,7 @@ class ResourceStreamTest extends TestCase
         $stream->read(10);
     }
 
-    public function testGetMetaData()
+    public function testGetMetaData(): void
     {
         $stream = $this->createStreamMock();
         $this->assertTrue($stream->getMetadata('seekable'));
@@ -169,7 +173,7 @@ class ResourceStreamTest extends TestCase
         $this->assertNull($stream->getMetadata('size'));
     }
 
-    private function createStreamMock()
+    private function createStreamMock(): TestResourceStream
     {
         $mock = new TestResourceStream();
 

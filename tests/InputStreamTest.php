@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Billbee\Tests\CustomShopApi\Http;
+namespace MintWare\Tests\Streams;
 
 use MintWare\Streams\InputStream;
 use PHPUnit\Framework\TestCase;
@@ -16,32 +16,32 @@ use Psr\Http\Message\StreamInterface;
 
 class InputStreamTest extends TestCase
 {
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $stream = new InputStream();
         $this->assertInstanceOf(StreamInterface::class, $stream);
         $this->assertEquals(0, $stream->getSize());
     }
 
-    public function testIsWritable()
+    public function testIsWritable(): void
     {
         $stream = new InputStream();
         $this->assertFalse($stream->isWritable());
     }
 
-    public function testIsSeekable()
+    public function testIsSeekable(): void
     {
         $stream = new InputStream();
         $this->assertTrue($stream->isSeekable());
     }
 
-    public function testIsReadable()
+    public function testIsReadable(): void
     {
         $stream = new InputStream();
         $this->assertTrue($stream->isReadable());
     }
 
-    public function testGetSize()
+    public function testGetSize(): void
     {
         $stream = new InputStream();
         $this->assertNull($stream->getSize());

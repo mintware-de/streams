@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Billbee\Tests\CustomShopApi\Http;
+namespace MintWare\Tests\Streams;
 
 use MintWare\Streams\MemoryStream;
 use PHPUnit\Framework\TestCase;
@@ -16,7 +16,7 @@ use Psr\Http\Message\StreamInterface;
 
 class MemoryStreamTest extends TestCase
 {
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $stream = new MemoryStream("test");
         $this->assertInstanceOf(StreamInterface::class, $stream);

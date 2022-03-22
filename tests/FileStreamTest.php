@@ -17,14 +17,18 @@ use RuntimeException;
 
 class FileStreamTest extends TestCase
 {
-    protected $tempFile;
+    protected string $tempFile = '';
 
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->tempFile = tempnam(sys_get_temp_dir(), 'stream_test');
+        $tempFile = tempnam(sys_get_temp_dir(), 'stream_test');
+        if ($tempFile === false) {
+            throw  new \Exception('Failed to get temp file');
+        }
+        $this->tempFile = $tempFile;
     }
 
-    public function testConstructor()
+    public function testConstructor(): void
     {
         $stream = new FileStream(__FILE__, true, false);
         $this->assertInstanceOf(StreamInterface::class, $stream);
@@ -41,14 +45,14 @@ class FileStreamTest extends TestCase
         $stream->close();
     }
 
-    public function testConstructorFailsNoFile()
+    public function testConstructorFailsNoFile(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('fopen(21312asd): failed to open stream: No such file or directory');
+        $this->expectExceptionMessage('fopen(21312asd):');
         new FileStream('21312asd', true, false);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unlink($this->tempFile);
     }
