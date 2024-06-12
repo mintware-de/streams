@@ -10,6 +10,7 @@
 
 namespace MintWare\Tests\Streams;
 
+use Exception;
 use MintWare\Streams\FileStream;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
@@ -23,7 +24,8 @@ class FileStreamTest extends TestCase
     {
         $tempFile = tempnam(sys_get_temp_dir(), 'stream_test');
         if ($tempFile === false) {
-            throw  new \Exception('Failed to get temp file');
+            /** @noinspection PhpUnhandledExceptionInspection */
+            throw new Exception('Failed to get temp file');
         }
         $this->tempFile = $tempFile;
     }
@@ -48,7 +50,7 @@ class FileStreamTest extends TestCase
     public function testConstructorFailsNoFile(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('fopen(21312asd):');
+        $this->expectExceptionMessage('File could not be opened');
         new FileStream('21312asd', true, false);
     }
 

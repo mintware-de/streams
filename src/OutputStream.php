@@ -10,23 +10,28 @@
 
 namespace MintWare\Streams;
 
+use Exception;
+use RuntimeException;
+
 class OutputStream extends ResourceStream
 {
     /**
-     * Creates a is a write-only stream that allows you to write to the output buffer
+     * Creates a write-only stream that allows you to write to the output buffer
      * mechanism in the same way as print and echo.
+     *
+     * @throws Exception If php://output could not be opened.
      */
     public function __construct()
     {
         $handle = fopen('php://output', 'w');
         if ($handle === false) {
-            throw new \Exception('Output stream could not be opened');
+            throw new Exception('Output stream could not be opened');
         }
         $this->handle = $handle;
     }
 
     public function getSize(): ?int
     {
-        throw new \RuntimeException('Can not read the size of a write only stream.');
+        throw new RuntimeException('Can not read the size of a write only stream.');
     }
 }

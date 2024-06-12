@@ -13,6 +13,7 @@ namespace MintWare\Tests\Streams;
 use MintWare\Streams\OutputStream;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
+use RuntimeException;
 
 class OutputStreamTest extends TestCase
 {
@@ -43,7 +44,7 @@ class OutputStreamTest extends TestCase
     public function testGetSize(): void
     {
         $stream = new OutputStream();
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Can not read the size of a write only stream.');
         $stream->getSize();
     }

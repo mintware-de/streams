@@ -10,16 +10,19 @@
 
 namespace MintWare\Streams;
 
+use Exception;
+
 class InputStream extends ResourceStream
 {
     /**
      * Creates a read-only stream that allows you to read raw data from the request body.
+     * @throws Exception If php://input could not be opened
      */
     public function __construct()
     {
         $handle = fopen('php://input', 'r');
         if ($handle === false) {
-            throw new \Exception('Input stream could not be opened');
+            throw new Exception('Input stream could not be opened');
         }
         $this->handle = $handle;
     }

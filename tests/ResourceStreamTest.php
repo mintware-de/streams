@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Streams package.
  *
@@ -10,18 +11,21 @@
 
 namespace MintWare\Tests\Streams;
 
+use Exception;
 use MintWare\Streams\ResourceStream;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
+/** @noinspection PhpMultipleClassesDeclarationsInOneFile */
 class TestResourceStream extends ResourceStream
 {
     public function __construct()
     {
         $resource = fopen('php://temp', 'rw');
         if ($resource === false) {
-            throw new \Exception('Failed to open stream');
+            /** @noinspection PhpUnhandledExceptionInspection */
+            throw new Exception('Failed to open stream');
         }
         $this->handle = $resource;
     }
@@ -41,6 +45,7 @@ class ResourceStreamTest extends TestCase
         $stream = $this->createStreamMock();
         $this->assertEquals('', (string)$stream);
         $stream->write('Hello World');
+        /** @noinspection PhpConditionAlreadyCheckedInspection */
         $this->assertEquals('Hello World', (string)$stream);
     }
 
@@ -131,6 +136,7 @@ class ResourceStreamTest extends TestCase
         $stream = $this->createStreamMock();
         $this->assertEquals('', (string)$stream);
         $stream->write('Hello World');
+        /** @noinspection PhpConditionAlreadyCheckedInspection */
         $this->assertEquals('Hello World', (string)$stream);
     }
 
@@ -175,8 +181,6 @@ class ResourceStreamTest extends TestCase
 
     private function createStreamMock(): TestResourceStream
     {
-        $mock = new TestResourceStream();
-
-        return $mock;
+        return new TestResourceStream();
     }
 }

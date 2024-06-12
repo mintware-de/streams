@@ -10,6 +10,8 @@
 
 namespace MintWare\Streams;
 
+use RuntimeException;
+
 /**
  * A MemoryStream, writes and reads data from/to php://memory
  * @package MintWare\Streams
@@ -24,7 +26,7 @@ class MemoryStream extends ResourceStream
     {
         $resource = fopen('php://memory', 'rw');
         if ($resource === false) {
-            throw new \RuntimeException('Failed to open memory stream.');
+            throw new RuntimeException('Failed to open memory stream.');
         }
         $this->handle = $resource;
         if ($data != null) {
