@@ -1,4 +1,3 @@
-[![Travis](https://img.shields.io/travis/mintware-de/streams.svg)](https://travis-ci.org/mintware-de/streams)
 [![Packagist](https://img.shields.io/packagist/v/mintware-de/streams.svg)](https://packagist.org/packages/mintware-de/streams)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/mintware-de/streams/master/LICENSE)
 [![Packagist](https://img.shields.io/packagist/dt/mintware-de/streams.svg)](https://packagist.org/packages/mintware-de/streams)

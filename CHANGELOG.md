@@ -10,6 +10,7 @@
   - `friendsofphp/php-cs-fixer`: `^v3.8.0` -> `^v3.58.1`
 - Removed `tests/autload.php` and use `vendor/autoload.php` instead.
 - Updated code/tests to support PHP 8.2
+- Copyright updated
 
 ## 2.0.0 (22 Mar 2022)
 
