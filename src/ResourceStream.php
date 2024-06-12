@@ -11,6 +11,7 @@
 namespace MintWare\Streams;
 
 use Exception;
+use LogicException;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
@@ -33,7 +34,7 @@ abstract class ResourceStream implements StreamInterface
      * @see http://php.net/manual/en/language.oop5.magic.php#object.tostring
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         if ($this->handle == null || $this->getSize() === 0) {
             return "";
@@ -50,7 +51,7 @@ abstract class ResourceStream implements StreamInterface
      *
      * @return void
      */
-    public function close()
+    public function close(): void
     {
         if ($this->handle != null) {
             fclose($this->handle);
@@ -117,7 +118,7 @@ abstract class ResourceStream implements StreamInterface
     }
 
     /**
-     * Returns whether or not the stream is seekable.
+     * Returns whether the stream is seekable.
      *
      * @return bool
      */
@@ -141,7 +142,7 @@ abstract class ResourceStream implements StreamInterface
      *     SEEK_END: Set position to end-of-stream plus offset.
      * @throws RuntimeException on failure.
      */
-    public function seek($offset, $whence = SEEK_SET): void
+    public function seek(int $offset, int $whence = SEEK_SET): void
     {
         try {
             if ($this->handle === null || get_resource_type($this->handle) !== 'stream') {
@@ -176,7 +177,7 @@ abstract class ResourceStream implements StreamInterface
     }
 
     /**
-     * Returns whether or not the stream is writable.
+     * Returns whether the stream is writable.
      *
      * @return bool
      */
@@ -199,7 +200,7 @@ abstract class ResourceStream implements StreamInterface
      * @return int Returns the number of bytes written to the stream.
      * @throws RuntimeException on failure.
      */
-    public function write($string): int
+    public function write(string $string): int
     {
         try {
             if ($this->handle === null || get_resource_type($this->handle) !== 'stream') {
@@ -212,7 +213,7 @@ abstract class ResourceStream implements StreamInterface
     }
 
     /**
-     * Returns whether or not the stream is readable.
+     * Returns whether the stream is readable.
      *
      * @return bool
      */
@@ -234,21 +235,21 @@ abstract class ResourceStream implements StreamInterface
     /**
      * Read data from the stream.
      *
-     * @param int $length Read up to $length bytes from the object and return
-     *     them. Fewer than $length bytes may be returned if underlying stream
+     * @param int $length Read up to $length bytes from the object and return them.
+     *     Fewer than $length bytes may be returned if underlying stream
      *     call returns fewer bytes.
      * @return string Returns the data read from the stream, or an empty string
      *     if no bytes are available.
      * @throws RuntimeException if an error occurs.
      */
-    public function read($length): string
+    public function read(int $length): string
     {
         try {
             if ($this->handle === null || get_resource_type($this->handle) !== 'stream') {
                 throw new Exception('ResourceStream::$handle must be a stream.', 2);
             }
-            if ($length < 0) {
-                throw new \LogicException('Length must not be negative.');
+            if ($length <= 0) {
+                throw new LogicException('Length must be positive.');
             }
             return fread($this->handle, $length) ?: '';
         } catch (Exception $e) {
@@ -280,7 +281,7 @@ abstract class ResourceStream implements StreamInterface
      *     provided. Returns a specific key value if a key is provided and the
      *     value is found, or null if the key is not found.
      */
-    public function getMetadata($key = null)
+    public function getMetadata($key = null): mixed
     {
         if (!is_resource($this->handle) || $key === null) {
             return null;

@@ -12,6 +12,7 @@ namespace MintWare\Streams;
 
 use Exception;
 use RuntimeException;
+use Throwable;
 
 class FileStream extends ResourceStream
 {
@@ -32,12 +33,12 @@ class FileStream extends ResourceStream
         }
 
         try {
-            $handle = fopen($filename, $mode);
+            $handle = @fopen($filename, $mode);
             if ($handle === false) {
                 throw new Exception('File could not be opened');
             }
             $this->handle = $handle;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
     }
