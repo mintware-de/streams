@@ -1,6 +1,6 @@
 # Changelog
 
-## Next
+## 3.0.0 (12 Jun 2024)
 
 - Dropped pre PHP 8.2 support
 - Updated dependencies
